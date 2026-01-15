@@ -7,9 +7,10 @@ pip3 install pyinstaller pypresence psutil rumps --quiet
 
 rm -rf build dist *.spec
 
-python3 -m PyInstaller --onefile --windowed \
+python3 -m PyInstaller --windowed \
     --name "Hytale RPC" \
     --icon "assets/icon.icns" \
+    --add-data "src:src" \
     --hidden-import rumps \
     --hidden-import pypresence \
     --hidden-import psutil \

@@ -11,20 +11,23 @@ def send_notification(title, subtitle, message):
 def run_macos_app():
     import rumps
     from ..rpc import HytaleRPC
-    from ..config import CLIENT_ID
 
     GITHUB_URL = "https://github.com/bas3line/hytale-rpc"
+    DISCORD_URL = "https://discord.gg/D5S6dh9Ww9"
 
     class HytaleMenuBar(rumps.App):
         def __init__(self):
             super().__init__("H", quit_button=None)
+            self.status_item = rumps.MenuItem("Status: Starting...")
             self.menu = [
-                "Status: Starting...",
+                rumps.MenuItem("Hytale RPC"),
                 None,
-                rumps.MenuItem("GitHub", callback=self.open_github),
-                rumps.MenuItem("Discord App ID: " + CLIENT_ID, callback=None),
+                self.status_item,
                 None,
-                rumps.MenuItem("Star the repo!", callback=self.open_github),
+                rumps.MenuItem("GitHub: bas3line/hytale-rpc", callback=self.open_github),
+                rumps.MenuItem("Discord Server", callback=self.open_discord),
+                None,
+                rumps.MenuItem("Star on GitHub!", callback=self.open_github),
                 None,
                 "Quit"
             ]
@@ -34,14 +37,11 @@ def run_macos_app():
 
         def update_status(self, text):
             try:
-                for item in self.menu:
-                    if hasattr(item, 'title') and item.title.startswith("Status:"):
-                        item.title = f"Status: {text}"
-                        break
+                self.status_item.title = f"Status: {text}"
 
                 if text != self.last_notification:
                     self.last_notification = text
-                    self._send_notification(text)  
+                    self._send_notification(text)
             except Exception:
                 pass
 
@@ -61,6 +61,9 @@ def run_macos_app():
 
         def open_github(self, _):
             webbrowser.open(GITHUB_URL)
+
+        def open_discord(self, _):
+            webbrowser.open(DISCORD_URL)
 
         @rumps.clicked("Quit")
         def quit_app(self, _):

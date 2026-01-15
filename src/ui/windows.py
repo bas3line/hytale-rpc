@@ -6,9 +6,9 @@ def run_windows_app():
     import pystray
     from PIL import Image
     from ..rpc import HytaleRPC
-    from ..config import CLIENT_ID
 
     GITHUB_URL = "https://github.com/bas3line/hytale-rpc"
+    DISCORD_URL = "https://discord.gg/D5S6dh9Ww9"
 
     icon = None
     status_text = "Starting..."
@@ -47,17 +47,22 @@ def run_windows_app():
     def open_github(ic, item):
         webbrowser.open(GITHUB_URL)
 
+    def open_discord(ic, item):
+        webbrowser.open(DISCORD_URL)
+
     def rpc_thread():
         rpc.run()
 
     img = Image.new('RGB', (64, 64), color=(114, 137, 218))
     menu = pystray.Menu(
+        pystray.MenuItem("Hytale RPC", None, enabled=False),
+        pystray.Menu.SEPARATOR,
         pystray.MenuItem(lambda text: f"Status: {status_text}", None, enabled=False),
         pystray.Menu.SEPARATOR,
-        pystray.MenuItem("GitHub", open_github),
-        pystray.MenuItem(f"Discord App ID: {CLIENT_ID}", None, enabled=False),
+        pystray.MenuItem("GitHub: bas3line/hytale-rpc", open_github),
+        pystray.MenuItem("Discord Server", open_discord),
         pystray.Menu.SEPARATOR,
-        pystray.MenuItem("Star the repo!", open_github),
+        pystray.MenuItem("Star on GitHub!", open_github),
         pystray.Menu.SEPARATOR,
         pystray.MenuItem("Quit", on_quit)
     )

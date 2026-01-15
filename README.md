@@ -36,6 +36,10 @@ Show your Hytale activity on Discord!
 
 **Windows:** Press `Win+R`, type `shell:startup`, paste the exe there
 
+## Links
+
+[<img src="assets/github.svg" width="20" height="20"> GitHub](https://github.com/bas3line/hytale-rpc) · [<img src="assets/discord.svg" width="20" height="20"> Discord Server](https://discord.gg/D5S6dh9Ww9)
+
 ## License
 
 MIT

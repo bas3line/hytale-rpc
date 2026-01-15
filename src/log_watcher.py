@@ -1,5 +1,6 @@
 import re
 import time
+import os
 from .config import HYTALE_LOG_DIR
 
 LOG_PATTERNS = {
@@ -24,6 +25,7 @@ class LogWatcher:
         self.server_address = ""
         self.is_multiplayer = False
         self.world_start_time = None
+        self.initialized = False
 
     def find_latest_log(self):
         if not HYTALE_LOG_DIR.exists():
@@ -38,10 +40,19 @@ class LogWatcher:
 
         if self.current_log != latest:
             self.current_log = latest
-            self.log_position = 0
             self.game_state = "main_menu"
             self.world_name = ""
             self.is_multiplayer = False
+            self.world_start_time = None
+            try:
+                self.log_position = os.path.getsize(self.current_log)
+            except:
+                self.log_position = 0
+            self.initialized = True
+            return
+
+        if not self.initialized:
+            return
 
         try:
             with open(self.current_log, 'r', errors='ignore') as f:
