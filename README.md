@@ -8,9 +8,11 @@ Show your Hytale activity on Discord!
 
 ## Download
 
-**[Download for macOS](https://github.com/bas3line/hytale-rpc/releases/latest)** - Get `HytaleRPC.dmg`
-
-**[Download for Windows](https://github.com/bas3line/hytale-rpc/releases/latest)** - Get `HytaleRPC.exe`
+| Platform | Download | File |
+|----------|----------|------|
+| macOS | [Download](https://github.com/bas3line/hytale-rpc/releases/download/v1.1.0/HytaleRPC.dmg) | `HytaleRPC.dmg` |
+| Windows | [Download](https://github.com/bas3line/hytale-rpc/releases/download/v1.1.0/HytaleRPC.exe) | `HytaleRPC.exe` |
+| Linux | [Download](https://github.com/bas3line/hytale-rpc/releases/download/v1.1.0/HytaleRPC) | `HytaleRPC` |
 
 ## How to Use
 
@@ -25,6 +27,12 @@ Show your Hytale activity on Discord!
 2. Look for the icon in your system tray
 3. Play Hytale - your status shows on Discord!
 
+### Linux
+1. Download `HytaleRPC`
+2. Make it executable: `chmod +x HytaleRPC`
+3. Run it: `./HytaleRPC`
+4. Play Hytale - your status shows on Discord!
+
 ## What It Shows
 
 - In Main Menu
@@ -37,6 +45,8 @@ Show your Hytale activity on Discord!
 **macOS:** System Settings → Login Items → Add the app
 
 **Windows:** Press `Win+R`, type `shell:startup`, paste the exe there
+
+**Linux:** Add to your desktop environment's startup applications or create a systemd user service
 
 ## Support
 
