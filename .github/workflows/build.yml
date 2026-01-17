@@ -1,4 +1,4 @@
-name: Build and Tag Release
+name: Build and Tag
 
 on:
   push:
@@ -7,37 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Get latest tag
-        id: tag
-        run: |
-          git fetch --tags
-          latest_tag=$(git tag -l 'v*' | sort -V | tail -1 || echo "v1.1.1")
-          echo "latest=$latest_tag" >> $GITHUB_OUTPUT
-
-      - name: Calculate next version
-        id: version
-        run: |
-          current="${{ steps.tag.outputs.latest }}"
-          version="${current#v}"
-          IFS='.' read -ra parts <<< "$version"
-          patch=$((${parts[2]} + 1))
-          next="v${parts[0]}.${parts[1]}.$patch"
-          echo "current=$current"
-          echo "next=$next"
-          echo "next=$next" >> $GITHUB_OUTPUT
-
   build-windows:
-    needs: build
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -68,7 +38,6 @@ jobs:
           path: dist/HytaleRPC.exe
 
   build-linux:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -100,7 +69,6 @@ jobs:
           path: dist/HytaleRPC
 
   build-macos:
-    needs: build
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -151,90 +119,21 @@ jobs:
           name: HytaleRPC-macOS
           path: HytaleRPC.dmg
 
-  release:
+  create-tag:
     needs: [build-windows, build-linux, build-macos]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Get latest tag
-        id: tag
-        run: |
-          git fetch --tags
-          latest_tag=$(git tag -l 'v*' | sort -V | tail -1 || echo "v1.1.1")
-          echo "latest=$latest_tag" >> $GITHUB_OUTPUT
-
-      - name: Calculate next version
-        id: version
-        run: |
-          current="${{ steps.tag.outputs.latest }}"
-          version="${current#v}"
-          IFS='.' read -ra parts <<< "$version"
-          patch=$((${parts[2]} + 1))
-          next="v${parts[0]}.${parts[1]}.$patch"
-          echo "next=$next" >> $GITHUB_OUTPUT
-          echo "tag=$next" >> $GITHUB_OUTPUT
-
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      - name: Create releases folder
-        run: |
-          tag="${{ steps.version.outputs.tag }}"
-          mkdir -p "releases/$tag"
-
-      - name: Move artifacts
-        run: |
-          tag="${{ steps.version.outputs.tag }}"
-          cp artifacts/HytaleRPC-Windows/*.exe "releases/$tag/" 2>/dev/null || true
-          cp artifacts/HytaleRPC-Linux/HytaleRPC "releases/$tag/" 2>/dev/null || true
-          cp artifacts/HytaleRPC-macOS/*.dmg "releases/$tag/" 2>/dev/null || true
-          ls -la "releases/$tag/"
-
-      - name: Generate changelog
-        id: changelog
-        run: |
-          tag="${{ steps.version.outputs.tag }}"
-          current="${{ steps.tag.outputs.latest }}"
-          notes=$(git log ${current}..HEAD --oneline --format="- %s" 2>/dev/null || echo "- Update")
-          echo "$notes" > "releases/$tag/CHANGELOG.txt"
-
-      - name: Create root changelog.txt
-        run: |
-          tag="${{ steps.version.outputs.tag }}"
-          current="${{ steps.tag.outputs.latest }}"
-          notes=$(git log ${current}..HEAD --oneline --format="- %s" 2>/dev/null || echo "- Update")
-          echo "# Changelog" > changelog.txt
-          echo "" >> changelog.txt
-          echo "## $tag" >> changelog.txt
-          echo "$notes" >> changelog.txt
 
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Add and commit
-        run: |
-          tag="${{ steps.version.outputs.tag }}"
-          git add "releases/$tag" changelog.txt
-          git status
-          git commit -m "Release $tag" || echo "Nothing to commit"
-
-      - name: Push to main
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
-
       - name: Create and push tag
         run: |
-          tag="${{ steps.version.outputs.tag }}"
-          git tag "$tag"
-          git push origin "$tag"
-          echo "Created tag: $tag"
+          git tag v1.1.2
+          git push origin v1.1.2
+          echo "Created tag: v1.1.2"
