@@ -135,5 +135,5 @@ jobs:
       - name: Create and push tag
         run: |
           git tag v1.1.2
-          git push origin v1.1.2
+          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/bas3line/hytale-rpc.git v1.1.2
           echo "Created tag: v1.1.2"
