@@ -131,7 +131,7 @@ jobs:
       - name: Delete existing latest release
         uses: dev-drprasad/delete-tag-and-release@v1.1
         with:
-          tag_name: latest
+          tag_name: v1.1.1
           github_token: ${{ secrets.GITHUB_TOKEN }}
           delete_release: true
         continue-on-error: true
@@ -139,14 +139,58 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: latest
-          name: Latest Build
+          tag_name: v1.1.1
+          name: v1.1.1
           files: |
             HytaleRPC-Windows/HytaleRPC.exe
             HytaleRPC-Linux/HytaleRPC
             HytaleRPC-macOS/HytaleRPC.dmg
           body: |
-            Automatically built from the latest commit on main.
+            ## 🎉 What's New
 
-            Commit: ${{ github.sha }}
+            ### ✨ Features
+            - **Fixed Discord Rich Presence on macOS** - Platform-specific log watchers ensure proper RPC detection
+            - **Added platform-specific builders** - Each platform now uses optimized log patterns
+            - **Improved build workflow** - GitHub Actions now builds platform-specific binaries
+
+            ### 🐛 Bug Fixes
+            - Fixed macOS parse logic to work with Hytale log patterns
+            - Resolved RPC not showing on Discord while notifications appeared
+
+            ---
+
+            ## 📦 Downloads
+
+            ### macOS
+            Download: [HytaleRPC.dmg](https://github.com/bas3line/hytale-rpc/releases/download/v1.1.1/HytaleRPC.dmg)
+
+            Installation: See [MACOS_SETUP.md](https://github.com/bas3line/hytale-rpc/blob/main/installations/MACOS_SETUP.md)
+
+            ### Windows
+            Download: [HytaleRPC.exe](https://github.com/bas3line/hytale-rpc/releases/download/v1.1.1/HytaleRPC.exe)
+
+            Installation: See [WINDOWS_SETUP.md](https://github.com/bas3line/hytale-rpc/blob/main/installations/WINDOWS_SETUP.md)
+
+            ### Linux
+            Download: [HytaleRPC](https://github.com/bas3line/hytale-rpc/releases/download/v1.1.1/HytaleRPC)
+
+            Installation: See [LINUX_SETUP.md](https://github.com/bas3line/hytale-rpc/blob/main/installations/LINUX_SETUP.md)
+
+            ---
+
+            ## 📋 What it Shows
+
+            - **In Main Menu** - When you're in the lobby
+            - **Playing Singleplayer** - Shows world name
+            - **Playing Multiplayer** - Shows server address
+            - **Time played** - Tracks your session duration
+
+            ---
+
+            ## 🔗 Links
+
+            - [Discord Server](https://discord.gg/D5S6dh9Ww9)
+            - [Report Issues](https://github.com/bas3line/hytale-rpc/issues)
+            - [Full Changelog](https://github.com/bas3line/hytale-rpc/compare/v1.1.0...v1.1.1)
           prerelease: false
+          latest: true
