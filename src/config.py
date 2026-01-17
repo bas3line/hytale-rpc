@@ -40,7 +40,3 @@ HYTALE_PROCESS_NAMES = [
     "hytalelauncher", "hytalelauncher.exe", "hytale-launcher",
 ]
 
-DISCORD_PROCESS_NAMES = [
-    "discord", "discord.exe", "discordcanary", "discordcanary.exe",
-    "discordptb", "discordptb.exe",
-]
