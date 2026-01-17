@@ -10,7 +10,7 @@ def send_notification(title, subtitle, message):
 
 def run_macos_app():
     import rumps
-    from ..rpc import HytaleRPC
+    from ..rpc_macos import HytaleRPC
 
     GITHUB_URL = "https://github.com/bas3line/hytale-rpc"
     DISCORD_URL = "https://discord.gg/D5S6dh9Ww9"

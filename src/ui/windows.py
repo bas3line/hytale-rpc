@@ -5,7 +5,7 @@ import webbrowser
 def run_windows_app():
     import pystray
     from PIL import Image
-    from ..rpc import HytaleRPC
+    from ..rpc_windows import HytaleRPC
 
     GITHUB_URL = "https://github.com/bas3line/hytale-rpc"
     DISCORD_URL = "https://discord.gg/D5S6dh9Ww9"

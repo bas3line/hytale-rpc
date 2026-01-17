@@ -1,6 +1,8 @@
-import threading
-import webbrowser
+import sys
+import os
 import subprocess
+import signal
+import time
 
 
 def send_notification(title, message):
@@ -13,71 +15,53 @@ def send_notification(title, message):
         pass
 
 
+def launch_in_terminal():
+    if hasattr(sys, 'frozen'):
+        exe_path = sys.executable
+    else:
+        exe_path = os.path.abspath(sys.argv[0])
+
+    cli_arg = [exe_path, "--cli"]
+
+    terminals = [
+        ("gnome-terminal", ["--"]),
+        ("kitty", []),
+        ("xfce4-terminal", ["-e"]),
+        ("konsole", ["-e"]),
+        ("xterm", ["-e"]),
+        ("alacritty", ["-e"]),
+    ]
+
+    for term_name, term_flags in terminals:
+        try:
+            if subprocess.call(["command", "-v", term_name], shell=True) != 0:
+                continue
+
+            cmd = [term_name] + term_flags + cli_arg
+            subprocess.Popen(cmd, start_new_session=True)
+            time.sleep(0.5)
+            return True
+        except:
+            continue
+    return False
+
+
 def run_linux_app():
-    import pystray
-    from PIL import Image
-    from ..rpc import HytaleRPC
+    from .cli import run_cli
 
-    GITHUB_URL = "https://github.com/bas3line/hytale-rpc"
-    DISCORD_URL = "https://discord.gg/D5S6dh9Ww9"
+    if "--cli" in sys.argv:
+        run_cli()
+        return
 
-    icon = None
-    status_text = "Starting..."
-    last_notification = None
+    is_atty = sys.stdin.isatty() if sys.stdin else False
+    if is_atty:
+        run_cli()
+        return
 
-    def notify(text):
-        if "Connected" in text:
-            send_notification("Connected to Discord", "Now showing your activity")
-        elif "In Main Menu" in text:
-            send_notification("In Main Menu", "Waiting in lobby")
-        elif "Playing Singleplayer" in text:
-            send_notification("Entered World", "Playing singleplayer")
-        elif "Playing Multiplayer" in text:
-            send_notification("Joined Server", "Playing multiplayer")
-        elif "Loading" in text:
-            send_notification("Loading World", "Entering game...")
-        elif "Joining" in text:
-            send_notification("Joining Server", "Connecting...")
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
 
-    def update_status(text):
-        nonlocal status_text, last_notification
-        status_text = text
+    if launch_in_terminal():
+        time.sleep(1)
+        sys.exit(0)
 
-        if text != last_notification:
-            last_notification = text
-            notify(text)
-
-    rpc = HytaleRPC(status_callback=update_status)
-
-    def on_quit(ic, item):
-        rpc.stop()
-        ic.stop()
-
-    def open_github(ic, item):
-        webbrowser.open(GITHUB_URL)
-
-    def open_discord(ic, item):
-        webbrowser.open(DISCORD_URL)
-
-    def rpc_thread():
-        rpc.run()
-
-    img = Image.new('RGB', (64, 64), color=(114, 137, 218))
-    menu = pystray.Menu(
-        pystray.MenuItem("Hytale RPC", None, enabled=False),
-        pystray.Menu.SEPARATOR,
-        pystray.MenuItem(lambda text: f"Status: {status_text}", None, enabled=False),
-        pystray.Menu.SEPARATOR,
-        pystray.MenuItem("GitHub: bas3line/hytale-rpc", open_github),
-        pystray.MenuItem("Discord Server", open_discord),
-        pystray.Menu.SEPARATOR,
-        pystray.MenuItem("Star on GitHub!", open_github),
-        pystray.Menu.SEPARATOR,
-        pystray.MenuItem("Quit", on_quit)
-    )
-    icon = pystray.Icon("Hytale RPC", img, "Hytale RPC", menu)
-
-    t = threading.Thread(target=rpc_thread, daemon=True)
-    t.start()
-
-    icon.run()
+    run_cli()

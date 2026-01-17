@@ -23,7 +23,7 @@ python3 -m PyInstaller --windowed \
     --exclude-module test \
     --exclude-module unittest \
     --osx-bundle-identifier com.hytale.rpc \
-    hytale_rpc.py
+    hytale_rpc_macos.py
 
 mkdir -p releases
 

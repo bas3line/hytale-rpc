@@ -4,12 +4,16 @@ import os
 from .config import HYTALE_LOG_DIR
 
 LOG_PATTERNS = {
-    "main_menu": re.compile(r"Changing from Stage \w+ to MainMenu"),
-    "singleplayer_world": re.compile(r'Connecting to singleplayer world "([^"]+)"'),
-    "singleplayer_create": re.compile(r'Creating new singleplayer world in ".*/Saves/([^"]+)"'),
-    "multiplayer_connect": re.compile(r'Connecting to (?:multiplayer|dedicated) server'),
-    "server_connect": re.compile(r'Opening Quic Connection to ([^:]+):(\d+)'),
-    "in_game": re.compile(r'GameInstance\.StartJoiningWorld\(\)'),
+    "main_menu": re.compile(r'Changing Stage to MainMenu|Changing from Stage (?:Loading|GameLoading) to MainMenu', re.IGNORECASE),
+    "singleplayer_world": re.compile(r'Connecting to singleplayer world "([^"]+)"', re.IGNORECASE),
+    "singleplayer_create": re.compile(r'Creating new singleplayer world in|Creating world', re.IGNORECASE),
+    "multiplayer_connect": re.compile(r'Connecting to (?:multiplayer|dedicated) server|Server connection established', re.IGNORECASE),
+    "server_connect": re.compile(r'Opening Quic Connection to ([\d\w\.-]+):(\d+)', re.IGNORECASE),
+    "in_game": re.compile(r'Changing from Stage (?:GameLoading|Loading) to InGame|GameInstance\.StartJoiningWorld\s*\(\s*\)|GameInstance\.OnWorldJoined\s*\(\s*\)', re.IGNORECASE),
+    "world_loaded": re.compile(r'World loaded|World finished loading|World ready|Loading world:', re.IGNORECASE),
+    "server_name": re.compile(r'Server name:?\s*"([^"]+)"|Joined server:?\s*"([^"]+)"', re.IGNORECASE),
+    "playing_singleplayer": re.compile(r'Singleplayer world "([^"]+)"|Playing in singleplayer|Singleplayer mode', re.IGNORECASE),
+    "playing_multiplayer": re.compile(r'Playing in multiplayer|Multiplayer mode|Multi player|dedicated server', re.IGNORECASE),
 }
 
 
@@ -42,16 +46,31 @@ class LogWatcher:
             self.current_log = latest
             self.game_state = "main_menu"
             self.world_name = ""
+            self.server_address = ""
             self.is_multiplayer = False
             self.world_start_time = None
+
             try:
-                self.log_position = os.path.getsize(self.current_log)
+                file_size = os.path.getsize(self.current_log)
+                read_from = max(0, file_size - 200000)
+
+                with open(self.current_log, 'r', errors='ignore') as f:
+                    f.seek(read_from)
+                    lines_to_skip = True
+                    for line in f:
+                        lines_to_skip = False
+                        self._parse(line)
+                    self.log_position = f.tell()
+
+                self.initialized = True
             except:
                 self.log_position = 0
-            self.initialized = True
             return
 
         if not self.initialized:
+            return
+
+        if not self.current_log:
             return
 
         try:
@@ -67,6 +86,7 @@ class LogWatcher:
         if LOG_PATTERNS["main_menu"].search(line):
             self.game_state = "main_menu"
             self.world_name = ""
+            self.server_address = ""
             self.is_multiplayer = False
             self.world_start_time = None
             return
@@ -74,14 +94,14 @@ class LogWatcher:
         m = LOG_PATTERNS["singleplayer_world"].search(line)
         if m:
             self.game_state = "loading"
-            self.world_name = m.group(1)
+            self.world_name = m.group(1) if m.lastindex else ""
             self.is_multiplayer = False
             return
 
         m = LOG_PATTERNS["singleplayer_create"].search(line)
         if m:
             self.game_state = "loading"
-            self.world_name = m.group(1)
+            self.world_name = ""
             self.is_multiplayer = False
             return
 
@@ -91,13 +111,34 @@ class LogWatcher:
             return
 
         m = LOG_PATTERNS["server_connect"].search(line)
-        if m and m.group(1) not in ("127.0.0.1", "localhost"):
-            self.is_multiplayer = True
-            self.server_address = m.group(1)
+        if m:
+            addr = m.group(1) if m.groups() and m.group(1) else m.group(3) if len(m.groups()) >= 3 and m.group(3) else ""
+            if addr and addr not in ("127.0.0.1", "localhost"):
+                self.is_multiplayer = True
+                self.server_address = addr
 
-        if LOG_PATTERNS["in_game"].search(line):
+        m = LOG_PATTERNS["server_name"].search(line)
+        if m:
+            server_name = m.group(1) if m.groups() and m.group(1) else m.group(2) if len(m.groups()) >= 2 and m.group(2) else ""
+            if server_name:
+                self.server_address = server_name
+
+        if LOG_PATTERNS["in_game"].search(line) or LOG_PATTERNS["world_loaded"].search(line):
             self.game_state = "in_game"
-            self.world_start_time = int(time.time())
+            if not self.world_start_time:
+                self.world_start_time = int(time.time())
+
+        if LOG_PATTERNS["playing_singleplayer"].search(line):
+            self.game_state = "in_game"
+            self.is_multiplayer = False
+            if not self.world_start_time:
+                self.world_start_time = int(time.time())
+
+        if LOG_PATTERNS["playing_multiplayer"].search(line):
+            self.game_state = "in_game"
+            self.is_multiplayer = True
+            if not self.world_start_time:
+                self.world_start_time = int(time.time())
 
     def get_presence(self):
         if self.game_state == "main_menu":
