@@ -15,7 +15,8 @@ python3 -m PyInstaller --onefile \
     --hidden-import pypresence \
     --hidden-import psutil \
     --hidden-import pystray._xorg \
-    --exclude-module tkinter \
+    --hidden-import tkinter \
+    --hidden-import tkinter.scrolledtext \
     --exclude-module test \
     --exclude-module unittest \
     hytale_rpc.py

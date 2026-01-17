@@ -84,6 +84,11 @@ class HytaleRPC:
                 if self.connect():
                     rpc_active = True
                     self.set_status("Connected!")
+                    time.sleep(2)
+                    self.log_watcher.update()
+                    details, state = self.log_watcher.get_presence()
+                    if details != "In Main Menu":
+                        self.set_status(details)
 
             elif not hytale_on and rpc_active:
                 self.disconnect()

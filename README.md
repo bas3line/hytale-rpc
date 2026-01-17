@@ -16,22 +16,11 @@ Show your Hytale activity on Discord!
 
 ## How to Use
 
-### macOS
-1. Download and open `HytaleRPC.dmg`
-2. Drag the app to Applications
-3. Open it - look for "H" in your menu bar
-4. Play Hytale - your status shows on Discord!
+**[macOS Setup Guide](installations/MACOS_SETUP.md)** - Download, install, and configure on macOS
 
-### Windows
-1. Download and run `HytaleRPC.exe`
-2. Look for the icon in your system tray
-3. Play Hytale - your status shows on Discord!
+**[Windows Setup Guide](installations/WINDOWS_SETUP.md)** - Download and install on Windows
 
-### Linux
-1. Download `HytaleRPC`
-2. Make it executable: `chmod +x HytaleRPC`
-3. Run it: `./HytaleRPC`
-4. Play Hytale - your status shows on Discord!
+**[Linux Setup Guide](installations/LINUX_SETUP.md)** - Terminal based RPC for Linux
 
 ## What It Shows
 
