@@ -1,14 +1,15 @@
 import time
 import platform
 from pypresence import Presence
+from pypresence.utils import get_ipc_path
 if platform.system() == "Darwin":
-    from .config_macos import CLIENT_ID, HYTALE_PROCESS_NAMES, DISCORD_PROCESS_NAMES
+    from .config_macos import CLIENT_ID, HYTALE_PROCESS_NAMES
     from .log_watcher_macos import LogWatcher
 elif platform.system() == "Windows":
-    from .config_windows import CLIENT_ID, HYTALE_PROCESS_NAMES, DISCORD_PROCESS_NAMES
+    from .config_windows import CLIENT_ID, HYTALE_PROCESS_NAMES
     from .log_watcher_windows import LogWatcher
 else:
-    from .config import CLIENT_ID, HYTALE_PROCESS_NAMES, DISCORD_PROCESS_NAMES
+    from .config import CLIENT_ID, HYTALE_PROCESS_NAMES
     from .log_watcher import LogWatcher
 from .process import is_process_running, get_process_start_time
 
@@ -83,7 +84,7 @@ class HytaleRPC:
         self.set_status("Waiting for Hytale...")
 
         while self.running:
-            discord_on = is_process_running(DISCORD_PROCESS_NAMES)
+            discord_on = True if get_ipc_path() else False
             hytale_on = is_process_running(HYTALE_PROCESS_NAMES)
 
             if hytale_on and discord_on and not rpc_active:
