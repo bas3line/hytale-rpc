@@ -7,12 +7,14 @@ pip install pyinstaller pypresence psutil pystray pillow --quiet
 
 pyinstaller --onefile --windowed ^
     --name "HytaleRPC" ^
-    --add-data "assets\image.png;." ^
+    --add-data "src;src" ^
     --hidden-import pystray ^
     --hidden-import PIL ^
     --hidden-import pypresence ^
     --hidden-import psutil ^
-    hytale_rpc.py
+    hytale_rpc_windows.py
+
+rd /s /q build dist *.spec 2>nul
 
 if not exist "releases" mkdir releases
 copy "dist\HytaleRPC.exe" "releases\HytaleRPC.exe"

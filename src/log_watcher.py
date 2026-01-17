@@ -94,9 +94,7 @@ class LogWatcher:
         m = LOG_PATTERNS["singleplayer_world"].search(line)
         if m:
             self.game_state = "loading"
-            world_name = m.group(1) if m.groups() and m.group(1) else m.group(2) if len(m.groups()) >= 2 and m.group(2) else ""
-            if world_name:
-                self.world_name = world_name
+            self.world_name = m.group(1) if m.lastindex else ""
             self.is_multiplayer = False
             return
 

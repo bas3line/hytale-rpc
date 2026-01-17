@@ -29,7 +29,7 @@ jobs:
             --hidden-import PIL `
             --hidden-import pypresence `
             --hidden-import psutil `
-            hytale_rpc.py
+            hytale_rpc_windows.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -85,13 +85,21 @@ jobs:
         run: |
           python3 -m PyInstaller --windowed \
             --name "Hytale RPC" \
+            --icon "assets/icon.icns" \
             --add-data "src:src" \
             --hidden-import rumps \
             --hidden-import pypresence \
             --hidden-import psutil \
             --exclude-module PIL \
+            --exclude-module numpy \
+            --exclude-module pandas \
+            --exclude-module matplotlib \
+            --exclude-module scipy \
+            --exclude-module tkinter \
+            --exclude-module test \
+            --exclude-module unittest \
             --osx-bundle-identifier com.hytale.rpc \
-            hytale_rpc.py
+            hytale_rpc_macos.py
 
           /usr/libexec/PlistBuddy -c "Add :LSUIElement bool true" "dist/Hytale RPC.app/Contents/Info.plist"
 
