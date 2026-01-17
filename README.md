@@ -1,5 +1,9 @@
 # Hytale Discord Rich Presence
 
+<a href="https://rpc.ykira.com">
+  <img src="https://img.shields.io/badge/Website-rpc.ykira.com-blueviolet?style=flat-square">
+</a>
+
 Show your Hytale activity on Discord!
 
 ![Discord RPC Preview](assets/rpc.png)
