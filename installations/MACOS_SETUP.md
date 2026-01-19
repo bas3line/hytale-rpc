@@ -40,12 +40,25 @@
 
 ## Troubleshooting
 
-### App won't open
+### App won't open - "Hytale RPC is damaged and can't be opened"
 
-If you get a security warning:
+macOS may show this warning because the app isn't signed with an Apple Developer certificate. This is expected for free/open-source software.
+
+**Option 1: Open via System Settings (recommended)**
 1. Open System Settings → Privacy & Security
-2. Look for "HytaleRPC was blocked from opening"
+2. Scroll down and look for "HytaleRPC was blocked from opening"
 3. Click **Open Anyway**
+
+**Option 2: Remove quarantine attribute (terminal)**
+```bash
+xattr -cr /Applications/Hytale\ RPC.app
+```
+Then open the app normally.
+
+**Option 3: Right-click open**
+1. Right-click (or Control-click) on Hytale RPC in Applications
+2. Select **Open**
+3. Click **Open** in the dialog
 
 ### Not showing on Discord
 
