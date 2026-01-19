@@ -1,11 +1,11 @@
 import time
 import platform
-from pypresence import Presence
+from pypresence.presence import Presence
 if platform.system() == "Darwin":
     from .config_macos import CLIENT_ID, HYTALE_PROCESS_NAMES, DISCORD_PROCESS_NAMES
     from .log_watcher_macos import LogWatcher
 else:
-    from .config import CLIENT_ID, HYTALE_PROCESS_NAMES, DISCORD_PROCESS_NAMES
+    from .config import CLIENT_ID, HYTALE_PROCESS_NAMES, DISCORD_PROCESS_NAMES, HIDE_SERVER_ADDRESS
     from .log_watcher import LogWatcher
 from .process import is_process_running, get_process_start_time
 

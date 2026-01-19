@@ -1,7 +1,24 @@
 import re
 import time
 import os
+import json
+from pathlib import Path
 from .config import HYTALE_LOG_DIR
+
+CONFIG_DIR = Path.home() / ".hytale-rpc"
+CONFIG_FILE = CONFIG_DIR / "settings.json"
+
+
+def get_privacy_mode():
+    try:
+        CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+        if CONFIG_FILE.exists():
+            with open(CONFIG_FILE, "r") as f:
+                data = json.load(f)
+            return data.get("privacy_mode", False)
+        return False
+    except:
+        return False
 
 LOG_PATTERNS = {
     "main_menu": re.compile(r"Changing from Stage \w+ to MainMenu"),
@@ -105,14 +122,15 @@ class LogWatcher:
             self.world_start_time = int(time.time())
 
     def get_presence(self):
+        privacy = get_privacy_mode()
         if self.game_state == "main_menu":
             return "In Main Menu", "Idle"
         if self.game_state == "loading":
             if self.is_multiplayer:
-                return "Joining Server", self.server_address or "Connecting..."
+                return "Joining Server", "Connecting..." if privacy else self.server_address or "Connecting..."
             return "Loading World", self.world_name or "..."
         if self.game_state == "in_game":
             if self.is_multiplayer:
-                return "Playing Multiplayer", f"Server: {self.server_address}" if self.server_address else "Online"
+                return "Playing Multiplayer", "Online" if privacy else (f"Server: {self.server_address}" if self.server_address else "Online")
             return "Playing Singleplayer", f"World: {self.world_name}" if self.world_name else "Exploring Orbis"
         return "Playing Hytale", "Exploring Orbis"

@@ -4,6 +4,8 @@ from pathlib import Path
 
 CLIENT_ID = "1461306150497550376"
 
+HIDE_SERVER_ADDRESS = False
+
 if platform.system() == "Darwin":
     HYTALE_LOG_DIR = Path.home() / "Library/Application Support/Hytale/UserData/Logs"
 elif platform.system() == "Windows":

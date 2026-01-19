@@ -19,10 +19,26 @@ def run_macos_app():
         def __init__(self):
             super().__init__("H", quit_button=None)
             self.status_item = rumps.MenuItem("Status: Starting...")
+            self.privacy_item = rumps.MenuItem("Privacy Mode", callback=self.toggle_privacy)
+
+            try:
+                import json
+                import pathlib
+                config_file = pathlib.Path.home() / ".hytale-rpc" / "settings.json"
+                if config_file.exists():
+                    with open(config_file, "r") as f:
+                        data = json.load(f)
+                    if data.get("privacy_mode", False):
+                        self.privacy_item.state = 1
+            except:
+                pass
+
             self.menu = [
                 rumps.MenuItem("Hytale RPC"),
                 None,
                 self.status_item,
+                None,
+                self.privacy_item,
                 None,
                 rumps.MenuItem("GitHub: bas3line/hytale-rpc", callback=self.open_github),
                 rumps.MenuItem("Discord Server", callback=self.open_discord),
@@ -58,6 +74,26 @@ def run_macos_app():
                 send_notification("Hytale RPC", "Loading World", "Entering game...")
             elif "Joining" in text:
                 send_notification("Hytale RPC", "Joining Server", "Connecting...")
+
+        def toggle_privacy(self, sender):
+            import json
+            import pathlib
+            config_dir = pathlib.Path.home() / ".hytale-rpc"
+            config_dir.mkdir(parents=True, exist_ok=True)
+            config_file = config_dir / "settings.json"
+
+            if config_file.exists():
+                with open(config_file, "r") as f:
+                    data = json.load(f)
+            else:
+                data = {}
+
+            data["privacy_mode"] = not data.get("privacy_mode", False)
+
+            with open(config_file, "w") as f:
+                json.dump(data, f)
+
+            self.privacy_item.state = 1 if data["privacy_mode"] else 0
 
         def open_github(self, _):
             webbrowser.open(GITHUB_URL)

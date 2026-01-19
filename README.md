@@ -41,6 +41,49 @@ Show your Hytale activity on Discord!
 
 **Linux:** Add to your desktop environment's startup applications or create a systemd user service
 
+## Privacy Mode
+
+Hide your server address from Discord Rich Presence. When enabled, instead of showing "Server: play.example.com", it will show "Online" or "Connecting...".
+
+### Enabling Privacy Mode
+
+**macOS:**
+- Click the "H" menu bar icon
+- Toggle "Privacy Mode" in the menu
+
+Or via terminal:
+```bash
+# Enable
+/Applications/HytaleRPC.app/Contents/MacOS/Hytale\ RPC --Privacy ON
+
+# Disable
+/Applications/HytaleRPC.app/Contents/MacOS/Hytale\ RPC --Privacy OFF
+```
+
+**Windows:**
+- Right-click the system tray icon (if available)
+- Toggle Privacy Mode
+
+Or via command prompt:
+```cmd
+# Enable
+HytaleRPC.exe --Privacy ON
+
+# Disable
+HytaleRPC.exe --Privacy OFF
+```
+
+**Linux:**
+```bash
+# Enable
+./HytaleRPC --Privacy ON
+
+# Disable
+./HytaleRPC --Privacy OFF
+```
+
+**Default:** Privacy Mode is disabled (server address is shown)
+
 ## Support
 
 - Issues: [Open an issue](https://github.com/bas3line/hytale-rpc/issues)

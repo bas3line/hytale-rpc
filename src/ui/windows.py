@@ -50,22 +50,62 @@ def run_windows_app():
     def open_discord(ic, item):
         webbrowser.open(DISCORD_URL)
 
+    def get_privacy_state():
+        import json
+        import pathlib
+        config_dir = pathlib.Path.home() / ".hytale-rpc"
+        config_file = config_dir / "settings.json"
+        try:
+            config_dir.mkdir(parents=True, exist_ok=True)
+            if config_file.exists():
+                with open(config_file, "r") as f:
+                    data = json.load(f)
+                return data.get("privacy_mode", False)
+            return False
+        except:
+            return False
+
+    def toggle_privacy(ic, item):
+        import json
+        import pathlib
+        config_dir = pathlib.Path.home() / ".hytale-rpc"
+        config_file = config_dir / "settings.json"
+        try:
+            config_dir.mkdir(parents=True, exist_ok=True)
+            if config_file.exists():
+                with open(config_file, "r") as f:
+                    data = json.load(f)
+            else:
+                data = {}
+            data["privacy_mode"] = not data.get("privacy_mode", False)
+            with open(config_file, "w") as f:
+                json.dump(data, f)
+        except:
+            pass
+
+        icon.menu = create_menu()
+
+    def create_menu():
+        return pystray.Menu(
+            pystray.MenuItem("Hytale RPC", None, enabled=False),
+            pystray.Menu.SEPARATOR,
+            pystray.MenuItem(lambda text: f"Status: {status_text}", None, enabled=False),
+            pystray.Menu.SEPARATOR,
+            pystray.MenuItem("Privacy Mode", toggle_privacy, checked=lambda item: get_privacy_state()),
+            pystray.Menu.SEPARATOR,
+            pystray.MenuItem("GitHub: bas3line/hytale-rpc", open_github),
+            pystray.MenuItem("Discord Server", open_discord),
+            pystray.Menu.SEPARATOR,
+            pystray.MenuItem("Star on GitHub!", open_github),
+            pystray.Menu.SEPARATOR,
+            pystray.MenuItem("Quit", on_quit)
+        )
+
     def rpc_thread():
         rpc.run()
 
     img = Image.new('RGB', (64, 64), color=(114, 137, 218))
-    menu = pystray.Menu(
-        pystray.MenuItem("Hytale RPC", None, enabled=False),
-        pystray.Menu.SEPARATOR,
-        pystray.MenuItem(lambda text: f"Status: {status_text}", None, enabled=False),
-        pystray.Menu.SEPARATOR,
-        pystray.MenuItem("GitHub: bas3line/hytale-rpc", open_github),
-        pystray.MenuItem("Discord Server", open_discord),
-        pystray.Menu.SEPARATOR,
-        pystray.MenuItem("Star on GitHub!", open_github),
-        pystray.Menu.SEPARATOR,
-        pystray.MenuItem("Quit", on_quit)
-    )
+    menu = create_menu()
     icon = pystray.Icon("Hytale RPC", img, "Hytale RPC", menu)
 
     t = threading.Thread(target=rpc_thread, daemon=True)
