@@ -1,8 +1,6 @@
 # Hytale Discord Rich Presence
 
-<a href="https://rpc.ykira.com">
-  <img src="https://img.shields.io/badge/Website-rpc.ykira.com-blueviolet?style=flat-square">
-</a>
+If you like the project or it has been usefull for you please buy the developer a coffee at : https://buymeacoffee.com/bas3line 
 
 Show your Hytale activity on Discord!
 
