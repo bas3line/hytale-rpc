@@ -1,7 +1,9 @@
 import re
 import time
 import os
+from pathlib import Path
 from .config import HYTALE_LOG_DIR
+from .settings import get_privacy_mode
 
 LOG_PATTERNS = {
     "main_menu": re.compile(r'Changing Stage to MainMenu|Changing from Stage (?:Loading|GameLoading) to MainMenu', re.IGNORECASE),
@@ -56,14 +58,12 @@ class LogWatcher:
 
                 with open(self.current_log, 'r', errors='ignore') as f:
                     f.seek(read_from)
-                    lines_to_skip = True
                     for line in f:
-                        lines_to_skip = False
                         self._parse(line)
                     self.log_position = f.tell()
 
                 self.initialized = True
-            except:
+            except Exception:
                 self.log_position = 0
             return
 
@@ -141,14 +141,15 @@ class LogWatcher:
                 self.world_start_time = int(time.time())
 
     def get_presence(self):
+        privacy = get_privacy_mode()
         if self.game_state == "main_menu":
             return "In Main Menu", "Idle"
         if self.game_state == "loading":
             if self.is_multiplayer:
-                return "Joining Server", self.server_address or "Connecting..."
+                return "Joining Server", "Connecting..." if privacy else self.server_address or "Connecting..."
             return "Loading World", self.world_name or "..."
         if self.game_state == "in_game":
             if self.is_multiplayer:
-                return "Playing Multiplayer", f"Server: {self.server_address}" if self.server_address else "Online"
+                return "Playing Multiplayer", "Online" if privacy else (f"Server: {self.server_address}" if self.server_address else "Online")
             return "Playing Singleplayer", f"World: {self.world_name}" if self.world_name else "Exploring Orbis"
         return "Playing Hytale", "Exploring Orbis"

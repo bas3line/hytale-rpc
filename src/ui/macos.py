@@ -1,6 +1,7 @@
 import threading
 import subprocess
 import webbrowser
+from ..settings import get_privacy_mode, set_privacy_mode
 
 
 def send_notification(title, subtitle, message):
@@ -19,10 +20,20 @@ def run_macos_app():
         def __init__(self):
             super().__init__("H", quit_button=None)
             self.status_item = rumps.MenuItem("Status: Starting...")
+            self.privacy_item = rumps.MenuItem("Privacy Mode", callback=self.toggle_privacy)
+
+            try:
+                if get_privacy_mode():
+                    self.privacy_item.state = 1
+            except Exception:
+                pass
+
             self.menu = [
                 rumps.MenuItem("Hytale RPC"),
                 None,
                 self.status_item,
+                None,
+                self.privacy_item,
                 None,
                 rumps.MenuItem("GitHub: bas3line/hytale-rpc", callback=self.open_github),
                 rumps.MenuItem("Discord Server", callback=self.open_discord),
@@ -58,6 +69,11 @@ def run_macos_app():
                 send_notification("Hytale RPC", "Loading World", "Entering game...")
             elif "Joining" in text:
                 send_notification("Hytale RPC", "Joining Server", "Connecting...")
+
+        def toggle_privacy(self, sender):
+            current = get_privacy_mode()
+            set_privacy_mode(not current)
+            self.privacy_item.state = 0 if current else 1
 
         def open_github(self, _):
             webbrowser.open(GITHUB_URL)
