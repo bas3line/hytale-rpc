@@ -1,5 +1,6 @@
 import threading
 import webbrowser
+from ..settings import get_privacy_mode, set_privacy_mode
 
 
 def run_windows_app():
@@ -50,39 +51,8 @@ def run_windows_app():
     def open_discord(ic, item):
         webbrowser.open(DISCORD_URL)
 
-    def get_privacy_state():
-        import json
-        import pathlib
-        config_dir = pathlib.Path.home() / ".hytale-rpc"
-        config_file = config_dir / "settings.json"
-        try:
-            config_dir.mkdir(parents=True, exist_ok=True)
-            if config_file.exists():
-                with open(config_file, "r") as f:
-                    data = json.load(f)
-                return data.get("privacy_mode", False)
-            return False
-        except:
-            return False
-
     def toggle_privacy(ic, item):
-        import json
-        import pathlib
-        config_dir = pathlib.Path.home() / ".hytale-rpc"
-        config_file = config_dir / "settings.json"
-        try:
-            config_dir.mkdir(parents=True, exist_ok=True)
-            if config_file.exists():
-                with open(config_file, "r") as f:
-                    data = json.load(f)
-            else:
-                data = {}
-            data["privacy_mode"] = not data.get("privacy_mode", False)
-            with open(config_file, "w") as f:
-                json.dump(data, f)
-        except:
-            pass
-
+        set_privacy_mode(not get_privacy_mode())
         icon.menu = create_menu()
 
     def create_menu():
@@ -91,7 +61,7 @@ def run_windows_app():
             pystray.Menu.SEPARATOR,
             pystray.MenuItem(lambda text: f"Status: {status_text}", None, enabled=False),
             pystray.Menu.SEPARATOR,
-            pystray.MenuItem("Privacy Mode", toggle_privacy, checked=lambda item: get_privacy_state()),
+            pystray.MenuItem("Privacy Mode", toggle_privacy, checked=lambda item: get_privacy_mode()),
             pystray.Menu.SEPARATOR,
             pystray.MenuItem("GitHub: bas3line/hytale-rpc", open_github),
             pystray.MenuItem("Discord Server", open_discord),

@@ -11,20 +11,7 @@ except ImportError:
     os.system(f"{sys.executable} -m pip install pypresence psutil rumps --quiet")
 
 from src.ui import run_app
-
-def set_privacy_mode(enabled):
-    import json
-    import pathlib
-    config_dir = pathlib.Path.home() / ".hytale-rpc"
-    config_dir.mkdir(parents=True, exist_ok=True)
-    config_file = config_dir / "settings.json"
-    data = {}
-    if config_file.exists():
-        with open(config_file, "r") as f:
-            data = json.load(f)
-    data["privacy_mode"] = enabled
-    with open(config_file, "w") as f:
-        json.dump(data, f)
+from src.settings import set_privacy_mode
 
 if __name__ == "__main__":
     if len(sys.argv) > 2 and sys.argv[1] == "--Privacy":

@@ -1,26 +1,9 @@
 import re
 import time
 import os
-import json
 from pathlib import Path
-
-CONFIG_DIR = Path.home() / ".hytale-rpc"
-CONFIG_FILE = CONFIG_DIR / "settings.json"
-
-
-def get_privacy_mode():
-    try:
-        CONFIG_DIR.mkdir(parents=True, exist_ok=True)
-        if CONFIG_FILE.exists():
-            with open(CONFIG_FILE, "r") as f:
-                data = json.load(f)
-            return data.get("privacy_mode", False)
-        return False
-    except:
-        return False
-
-
-HYTALE_LOG_DIR = Path.home() / "Library/Application Support/Hytale/UserData/Logs"
+from .config import HYTALE_LOG_DIR
+from .settings import get_privacy_mode
 
 LOG_PATTERNS = {
     "main_menu": re.compile(r'Changing Stage to MainMenu|Changing from Stage (?:Loading|GameLoading) to MainMenu', re.IGNORECASE),
@@ -75,14 +58,12 @@ class LogWatcher:
 
                 with open(self.current_log, 'r', errors='ignore') as f:
                     f.seek(read_from)
-                    lines_to_skip = True
                     for line in f:
-                        lines_to_skip = False
                         self._parse(line)
                     self.log_position = f.tell()
 
                 self.initialized = True
-            except:
+            except Exception:
                 self.log_position = 0
             return
 

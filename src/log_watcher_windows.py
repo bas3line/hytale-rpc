@@ -1,24 +1,9 @@
 import re
 import time
 import os
-import json
 from pathlib import Path
-from .config import HYTALE_LOG_DIR
-
-CONFIG_DIR = Path.home() / ".hytale-rpc"
-CONFIG_FILE = CONFIG_DIR / "settings.json"
-
-
-def get_privacy_mode():
-    try:
-        CONFIG_DIR.mkdir(parents=True, exist_ok=True)
-        if CONFIG_FILE.exists():
-            with open(CONFIG_FILE, "r") as f:
-                data = json.load(f)
-            return data.get("privacy_mode", False)
-        return False
-    except:
-        return False
+from .config_windows import HYTALE_LOG_DIR
+from .settings import get_privacy_mode
 
 LOG_PATTERNS = {
     "main_menu": re.compile(r"Changing from Stage \w+ to MainMenu"),
@@ -64,7 +49,7 @@ class LogWatcher:
             self.world_start_time = None
             try:
                 self.log_position = os.path.getsize(self.current_log)
-            except:
+            except Exception:
                 self.log_position = 0
             self.initialized = True
             return

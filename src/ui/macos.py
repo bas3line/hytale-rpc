@@ -1,6 +1,7 @@
 import threading
 import subprocess
 import webbrowser
+from ..settings import get_privacy_mode, set_privacy_mode
 
 
 def send_notification(title, subtitle, message):
@@ -22,15 +23,9 @@ def run_macos_app():
             self.privacy_item = rumps.MenuItem("Privacy Mode", callback=self.toggle_privacy)
 
             try:
-                import json
-                import pathlib
-                config_file = pathlib.Path.home() / ".hytale-rpc" / "settings.json"
-                if config_file.exists():
-                    with open(config_file, "r") as f:
-                        data = json.load(f)
-                    if data.get("privacy_mode", False):
-                        self.privacy_item.state = 1
-            except:
+                if get_privacy_mode():
+                    self.privacy_item.state = 1
+            except Exception:
                 pass
 
             self.menu = [
@@ -76,24 +71,9 @@ def run_macos_app():
                 send_notification("Hytale RPC", "Joining Server", "Connecting...")
 
         def toggle_privacy(self, sender):
-            import json
-            import pathlib
-            config_dir = pathlib.Path.home() / ".hytale-rpc"
-            config_dir.mkdir(parents=True, exist_ok=True)
-            config_file = config_dir / "settings.json"
-
-            if config_file.exists():
-                with open(config_file, "r") as f:
-                    data = json.load(f)
-            else:
-                data = {}
-
-            data["privacy_mode"] = not data.get("privacy_mode", False)
-
-            with open(config_file, "w") as f:
-                json.dump(data, f)
-
-            self.privacy_item.state = 1 if data["privacy_mode"] else 0
+            current = get_privacy_mode()
+            set_privacy_mode(not current)
+            self.privacy_item.state = 0 if current else 1
 
         def open_github(self, _):
             webbrowser.open(GITHUB_URL)

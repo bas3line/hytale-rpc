@@ -4,8 +4,6 @@ from pathlib import Path
 
 CLIENT_ID = "1461306150497550376"
 
-PRIVACY_MODE = False
-
 def find_hytale_log_dir():
     if platform.system() == "Darwin":
         possible_dirs = [
